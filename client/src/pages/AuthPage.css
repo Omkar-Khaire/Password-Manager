@@ -1,0 +1,132 @@
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --bg-dark: #0f172a;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+}
+
+.auth-page {
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0, transparent 50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Floating Decorative Circles */
+.bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+}
+
+.circle-1 {
+    width: 300px;
+    height: 300px;
+    background: var(--primary);
+    top: -100px;
+    left: -100px;
+    opacity: 0.4;
+}
+
+.circle-2 {
+    width: 250px;
+    height: 250px;
+    background: #a855f7;
+    bottom: -50px;
+    right: -50px;
+    opacity: 0.3;
+}
+
+.auth-container-main {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 24px;
+    padding: 48px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.auth-icon-wrapper {
+    background: white;
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    color: var(--primary);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.auth-container-main h1 {
+    margin-bottom: 8px;
+    color: var(--text-main);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.auth-container-main p {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.auth-toggle {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+    transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+    color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* Modern Loading Spinner */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
