@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, LogOut, Plus, Search, User } from 'lucide-react';
+import { Shield, LogOut, Plus, Search, User, Sun, Moon, Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCredentials } from '../context/CredentialContext';
+import { useTheme } from '../context/ThemeContext';
 import { CredentialList } from '../components/CredentialList';
 import { CredentialModal } from '../components/CredentialModal';
 import './Dashboard.css';
@@ -9,10 +10,13 @@ import './Dashboard.css';
 export const Dashboard = () => {
     const { user, logout } = useAuth();
     const { credentials, loading, addCredential, updateCredential, deleteCredential } = useCredentials();
+    const { isDark, toggleTheme } = useTheme();
     const [showModal, setShowModal] = useState(false);
     const [editingCredential, setEditingCredential] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [message, setMessage] = useState(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Auto-clear toast messages
     useEffect(() => {
@@ -37,10 +41,10 @@ export const Dashboard = () => {
         try {
             if (editingCredential) {
                 await updateCredential(editingCredential._id, data);
-                setMessage({ type: 'success', text: 'Vault updated successfully' });
+                setMessage({ type: 'success', text: 'Credential updated successfully' });
             } else {
                 await addCredential(data);
-                setMessage({ type: 'success', text: 'New login secured' });
+                setMessage({ type: 'success', text: 'New credential secured' });
             }
             setShowModal(false);
         } catch (err) {
@@ -51,7 +55,7 @@ export const Dashboard = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Remove this credential permanently?')) return;
+        if (!window.confirm('Are you sure you want to permanently delete this credential?')) return;
         try {
             await deleteCredential(id);
             setMessage({ type: 'success', text: 'Credential removed' });
@@ -65,42 +69,101 @@ export const Dashboard = () => {
             {/* Toast Notification */}
             {message && (
                 <div className={`toast-message ${message.type}`}>
-                    {message.text}
+                    <div className="toast-content">
+                        <span>{message.text}</span>
+                        <button onClick={() => setMessage(null)} className="toast-close">×</button>
+                    </div>
                 </div>
             )}
 
-            <nav className="side-nav">
-                <div className="nav-logo">
-                    <Shield className="logo-icon" size={32} />
-                    <span>Vault.io</span>
+            {/* Sidebar Navigation */}
+            <nav className={`side-nav ${sidebarOpen ? 'open' : ''}`}>
+                <div className="nav-header">
+                    <div className="nav-logo">
+                        <div className="logo-icon-wrapper">
+                            <Shield className="logo-icon" size={24} />
+                        </div>
+                        <div className="logo-text">
+                            <span className="logo-name">SecureVault</span>
+                            <span className="logo-subtitle">Password Manager</span>
+                        </div>
+                    </div>
+                    <button 
+                        className="sidebar-close-btn md:hidden"
+                        onClick={() => setSidebarOpen(false)}
+                    >
+                        <X size={20} />
+                    </button>
                 </div>
-                <div className="nav-user">
-                    <div className="avatar">{user?.name?.charAt(0) || <User />}</div>
+
+                <div className="nav-user-section">
+                    <div className="user-avatar">
+                        {user?.name ? user.name.charAt(0).toUpperCase() : '?'}
+                    </div>
                     <div className="user-info">
-                        <p className="u-name">{user?.name}</p>
-                        <p className="u-status">Pro Account</p>
+                        <p className="u-name">{user?.name || 'User'}</p>
+                        <p className="u-status">Premium Account</p>
                     </div>
                 </div>
-                <button className="nav-logout" onClick={logout}>
-                    <LogOut size={18} /> Logout
-                </button>
+
+                <div className="nav-actions">
+                    <button className="nav-theme-btn" onClick={toggleTheme} title="Toggle Theme">
+                        {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                        <span>{isDark ? 'Light' : 'Dark'}</span>
+                    </button>
+
+                    <button className="nav-logout" onClick={logout}>
+                        <LogOut size={18} />
+                        <span>Logout</span>
+                    </button>
+                </div>
             </nav>
 
+            {/* Sidebar Overlay */}
+            {sidebarOpen && (
+                <div 
+                    className="sidebar-overlay"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
+            {/* Main Content */}
             <main className="dashboard-content">
                 <header className="content-header">
-                    <div className="search-bar">
-                        <Search size={18} />
-                        <input type="text" placeholder="Search your vault..." />
+                    <div className="header-left">
+                        <button 
+                            className="sidebar-toggle-btn md:hidden"
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                        >
+                            <Menu size={24} />
+                        </button>
+                        <h1 className="page-title">Your Vault</h1>
                     </div>
-                    <button className="btn-primary" onClick={handleAddClick}>
-                        <Plus size={18} /> Add New
-                    </button>
+
+                    <div className="header-controls">
+                        <div className="search-bar">
+                            <Search size={18} />
+                            <input 
+                                type="text" 
+                                placeholder="Search credentials..." 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                        <button className="btn-primary" onClick={handleAddClick}>
+                            <Plus size={18} />
+                            <span>Add New</span>
+                        </button>
+                    </div>
                 </header>
 
                 <section className="vault-section">
-                    <div className="section-title">
-                        <h2>Your Credentials</h2>
-                        <span className="count-badge">{credentials.length}</span>
+                    <div className="section-header">
+                        <div>
+                            <h2>Stored Credentials</h2>
+                            <p className="section-desc">Manage and secure your passwords</p>
+                        </div>
+                        <div className="count-badge">{credentials.length}</div>
                     </div>
 
                     {loading ? (
@@ -114,6 +177,7 @@ export const Dashboard = () => {
                             onAdd={handleAddClick}
                             onEdit={handleEditClick}
                             onDelete={handleDelete}
+                            searchQuery={searchQuery}
                         />
                     )}
                 </section>
